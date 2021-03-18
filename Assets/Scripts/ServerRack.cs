@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.LowLevel;
 
 public class ServerRack : MonoBehaviour
 {
@@ -45,11 +44,11 @@ public class ServerRack : MonoBehaviour
 
         if (orangeLights.Length != 0)
         {
-            Invoke("StartOrangeBlinging", Random.RandomRange(0f, startRange));
+            Invoke("StartOrangeBlinking", Random.RandomRange(0f, startRange));
         }
     }
 
-    private void StartOrangeBlinging()
+    private void StartOrangeBlinking()
     {
         StartCoroutine(BlickCorotune(orangeLights, timeStapOrange, false));
     }
