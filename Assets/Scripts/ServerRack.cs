@@ -1,24 +1,73 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.LowLevel;
 
 public class ServerRack : MonoBehaviour
 {
-    [SerializeField] [Range(0f, 1)] private float timeStap = 0.08f;
-    [SerializeField] private Light[] lights;
+    [SerializeField] [Range(0f, 1)] private float timeStapGreen = 0.08f;
+    [SerializeField] [Range(0f, 1)] private float timeStapOrange = 0.32f;
+    [SerializeField] [Range(1f, 5f)] private float startRange = 3;
 
-    void Start()
+    [SerializeField] private Material greenMaterial;
+    [SerializeField] private Material orangeMaterial;
+    [SerializeField] private Material redMaterial;
+
+    [SerializeField] private Light[] greenLights;
+    [SerializeField] private Light[] orangeLights;
+    [SerializeField] private Light[] redLights;
+
+    private readonly byte noBlinkCount = 4;
+
+    private void Awake()
     {
-        if(lights.Length == 0) return;
-        StartCoroutine(BlickCorotune());
+        foreach (var greenLight in greenLights)
+        {
+            greenLight.color = greenMaterial.color;
+        }
+
+        foreach (var orangeLight in orangeLights)
+        {
+            orangeLight.color = orangeMaterial.color;
+        }
+
+        foreach (var redLight in redLights)
+        {
+            redLight.color = redMaterial.color;
+        }
     }
 
-    private IEnumerator BlickCorotune()
+    private void Start()
+    {
+        if (greenLights.Length != 0)
+        {
+            StartCoroutine(BlickCorotune(greenLights, timeStapGreen));
+        }
+
+        if (orangeLights.Length != 0)
+        {
+            Invoke("StartOrangeBlinging", Random.RandomRange(0f, startRange));
+        }
+    }
+
+    private void StartOrangeBlinging()
+    {
+        StartCoroutine(BlickCorotune(orangeLights, timeStapOrange, false));
+    }
+
+    private IEnumerator BlickCorotune(Light[] lights, float timeStap, bool isGreenLight = true)
     {
         while (true)
         {
-            for (int i = 0; i < lights.Length; ++i)
+            foreach (var light in lights)
             {
-                lights[i].enabled = Random.Range(0, 2) == 1 ? true : false;
+                if (isGreenLight)
+                {
+                    light.enabled = Random.Range(0, 2) == 1 ? true : false;
+                }
+                else
+                {
+                    light.enabled = !light.enabled;
+                }
             }
             yield return new WaitForSeconds(timeStap);
         }
